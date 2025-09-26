@@ -15,13 +15,13 @@
        action: yum pkg=httpd state=present
 
      - name: start webservers on Host Machines
-       action: yum pkg=httpd state=started
+       action: service name=httpd state=started
 
      - name: Stop webservers server on Host Machines
        action: service name=httpd state=stopped
 
      - name: Restarted webservers on Host Machines
-       action: yum pkg=httpd state=restarted
+       action: service pkg=httpd state=restarted
 
      - name: Install MySQL on Host Machines
        action: yum pkg=mariadb105 state=present
