@@ -56,4 +56,4 @@
 
     - name: Print Jenkins Admin Password
       debug:
-      var: jenkinspass.stdout
+        var: jenkinspass.stdout
