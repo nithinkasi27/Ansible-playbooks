@@ -1,33 +1,37 @@
 ---
-- name: Install specific packages only if not present
+- name: Conditionally install packages if not present
   hosts: all
   become: yes
   vars:
     packages:
-      - git
-      - openjdk-11-jdk  
-      - python3
-
+      - name: git
+        check: "which git"
+      - name: java-11-openjdk
+        check: "java -version"
+      - name: python3
+        check: "python3 --version"
+ 
   tasks:
-
-    - name: Check if package is installed
-      ansible.builtin.shell: dpkg -l | grep -w "{{ item }}"
-      register: pkg_check
-      changed_when: false
-      failed_when: false
+    - name: Check if {{ item.name }} is installed
+      shell: "{{ item.check }}"
+      register: check_result
+      ignore_errors: true
       loop: "{{ packages }}"
       loop_control:
-        label: "{{ item }}"
-
-    - name: Install missing packages
-      ansible.builtin.apt:
-        name: "{{ item }}"
+        label: "{{ item.name }}"
+ 
+    - name: Install {{ item.item.name }} if not installed
+      dnf:
+        name: "{{ item.item.name }}"
         state: present
-      when: pkg_check.results[loop.index0].rc != 0
-      loop: "{{ packages }}"
+      when: item.rc != 0
+      loop: "{{ check_result.results }}"
       loop_control:
-        label: "{{ item }}"
-
-    - name: Next task after package installation
-      ansible.builtin.debug:
-        msg: "All required packages are installed. Proceeding to next task..."
+        label: "{{ item.item.name }}"
+ 
+    - name: Confirm installation complete
+      debug:
+        msg: "{{ item.item.name }} is installed or was just installed."
+      loop: "{{ check_result.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
