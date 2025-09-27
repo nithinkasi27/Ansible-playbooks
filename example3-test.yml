@@ -2,7 +2,7 @@
 - name: Deploy Flipkart Clone on Webservers
   hosts: webservers
   become: yes
-  tas:
+  tasks:
 
     - name: Install required packages
       yum:
