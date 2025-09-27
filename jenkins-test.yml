@@ -32,7 +32,7 @@
     - name: enable Jenkins
       systemd:
         name: jenkins
-        enabled: tru
+        enabled: true
     - name: Wait for thr port
       wait_for:
         delay: 30
